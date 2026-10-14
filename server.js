@@ -542,6 +542,26 @@ app.post('/api/may/xin-ma', chanKhoa, async (req, res) => {
 
 app.get('/api/may/duyet/:id', chanKhoa, (req, res) => res.json(may.trang_thai_duyet(req.params.id)));
 
+// Máy trạm báo về khi phát hiện phần mềm điều khiển từ xa đang chạy.
+// Tủ không tự thấy được remote (remote là luồng hình ảnh, không gọi API),
+// nên cảnh báo này đến từ chính script trên máy đó.
+app.post('/api/may/canh-bao-remote', chanKhoa, (req, res) => {
+  const b = req.body || {};
+  const tb = b.van_tay ? db.getThietBiTheoVanTay(b.van_tay) : null;
+  const tenMay = (tb && tb.ten_may) || b.may_id || 'không rõ';
+  // Máy đã gắn ca nào thì biết luôn nhân viên đang ngồi
+  let ai = '';
+  try {
+    const nv = tb && tb.nhan_vien_id ? db.getNhanVienPublic(tb.nhan_vien_id) : null;
+    if (nv) ai = ` · ${nv.ho_ten} (${nv.bo_account})`;
+  } catch (e) {}
+  svc.canhBao(null, 'REMOTE',
+    `⚠️ Máy ${tenMay}${ai} có phần mềm ĐIỀU KHIỂN TỪ XA đang chạy khi lấy mã.\n` +
+    `Phần mềm: ${b.phan_mem || 'không rõ'}\n` +
+    `Đã CHẶN không cho lấy OTP. Có thể ai đó đang xem màn hình máy này từ xa.`);
+  res.json({ ok: true });
+});
+
 app.post('/api/may/pha-kinh', chanKhoa, async (req, res) => {
   const b = req.body || {};
   if (!b.bo_account || !b.ma_giay) return res.status(400).json({ loi: 'Thiếu tham số.' });
@@ -651,6 +671,9 @@ app.get('/api/hen-gio', chanAdmin, (req, res) => res.json(hengio.chan_doan()));
 
 app.post('/api/hen-gio/da-ngay', chanAdmin, async (req, res) =>
   res.json({ ket_qua: await hengio.da_nhung_nguoi_het_ca() }));
+
+app.get('/api/bo/ip-may-chu', chanAdmin, async (req, res) =>
+  res.json(await hengio.xem_ip_ra_ngoai()));
 
 app.post('/api/bo/dang-nhap', chanAdmin, chanKhoa, async (req, res) =>
   res.json(await hengio.dang_nhap_bo()));
