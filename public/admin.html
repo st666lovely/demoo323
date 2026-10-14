@@ -536,6 +536,7 @@ input[type=checkbox]{width:auto;accent-color:var(--tim)}
         <option value="XIN_MA_MAY_LA">Xin mã từ máy chưa gắn</option>
         <option value="GIAN_LAN">Gian lận</option>
         <option value="NHUONG_MAY">Nhường máy</option>
+        <option value="BO_THIEU_QUYEN">BO thiếu quyền</option>
         <option value="DA_PHIEN_BO">Đá phiên BO</option>
         <option value="DANG_KY_MAY">Đăng ký máy</option>
         <option value="DOI_CA">Đổi ca</option>
@@ -647,6 +648,7 @@ input[type=checkbox]{width:auto;accent-color:var(--tim)}
           <div><label>Chuỗi hash mật khẩu</label><input id="bo_mk" type="password" placeholder="52fd842eea22..." onchange="luuCaiDat()"></div>
           <div style="align-self:end"><div class="hang">
             <button class="b chinh" onclick="thuDangNhapBo()">Lấy token BO ngay</button>
+            <button class="b" onclick="xemIpMayChu()" title="IP mà BO và Cloudflare nhìn thấy">Xem IP máy chủ</button>
             <span id="bo_dnKq" style="font-size:12px"></span>
           </div></div>
         </div>
